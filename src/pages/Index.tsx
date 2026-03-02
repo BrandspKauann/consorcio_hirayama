@@ -5,6 +5,7 @@ import OperatorsSection from "@/components/OperatorsSection";
 import SalaryFitsSection from "@/components/SalaryFitsSection";
 import SolidesSection from "@/components/SolidesSection";
 import PartnershipSection from "@/components/PartnershipSection";
+import YouTubeVideosSection from "@/components/YouTubeVideosSection";
 import BlogSection from "@/components/BlogSection";
 import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
@@ -22,6 +23,13 @@ const Index = () => {
         <SalaryFitsSection />
         <SolidesSection />
         <PartnershipSection />
+        <YouTubeVideosSection
+          videoUrls={[
+            "https://www.youtube.com/watch?v=mPk4CvtToz8",
+          ]}
+          title="Vídeos em Destaque"
+          description="Confira nossos conteúdos em vídeo sobre benefícios corporativos e gestão de RH"
+        />
         <BlogSection />
         <Footer />
       </div>
