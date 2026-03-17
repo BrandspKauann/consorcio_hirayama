@@ -157,8 +157,8 @@ export const ExitIntentModal = () => {
     <LeadFormModal
       open={showModal}
       onOpenChange={setShowModal}
-      title="Espere! Não vá embora ainda 🚀"
-      description="Receba uma consultoria gratuita e descubra como economizar nos benefícios da sua empresa. Preencha o formulário e entraremos em contato!"
+      title="Espere! Descubra como estruturar seu patrimônio"
+      description="Receba uma simulação gratuita e descubra qual consórcio ideal para você. Preencha o formulário e entraremos em contato!"
       origem="exit_intent"
     />
   );

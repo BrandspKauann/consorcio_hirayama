@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, Sparkles, MessageCircle } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 import { LeadFormModal } from "./LeadFormModal";
 import { useState } from "react";
@@ -17,165 +17,160 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
-      
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 relative z-10">
-        {/* Main Footer Content */}
-        <AnimatedSection animationType="fade">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 mb-10 sm:mb-12 md:mb-16 text-center md:text-left">
-            {/* Company Info */}
-            <div className="lg:col-span-2">
-              <div className="mb-5 sm:mb-6 md:mb-8">
-                <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 justify-center md:justify-start">
-                  <div className="flex flex-col items-center md:items-start">
-                    <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
-                      Consultoria VR
-                    </h3>
-                    <p className="text-xs sm:text-sm text-primary-foreground/70 font-medium">
-                      Especialistas em Benefícios
-                    </p>
-                  </div>
+    <footer className="relative overflow-hidden bg-[linear-gradient(180deg,#0f5b43_0%,#0b3d2d_100%)] text-primary-foreground">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.06),transparent_30%)] pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/20" />
+
+      <div className="container mx-auto px-4 py-14 sm:py-16 md:py-20 relative z-10">
+        <AnimatedSection animationType="slide-up">
+          <div className="mb-10 sm:mb-12 rounded-[2rem] border border-white/10 bg-white/8 backdrop-blur-md shadow-2xl overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr]">
+              <div className="p-7 sm:p-10 lg:p-12">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white/90">
+                  <Sparkles className="h-4 w-4 text-secondary" />
+                  Estratégia inteligente para conquistar patrimônio
                 </div>
-                <p className="text-xs sm:text-sm text-primary-foreground/80 mb-3 sm:mb-4 text-center md:text-left">
-                  Benefícios corporativos com quem entende do assunto
-                </p>
-              </div>
-              <p className="text-primary-foreground/90 mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-md mx-auto md:mx-0 text-xs sm:text-sm md:text-base">
-                Consultoria especializada em Vale Refeição (VR), Flash e Caju.
-              </p>
-              <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
-                <div className="flex items-center space-x-2 sm:space-x-3 justify-center md:justify-start">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-                  </div>
-                  <a 
-                    href="mailto:ewerton@hirayamacorretora.com.br" 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-xs sm:text-sm md:text-base break-all"
+
+                <div className="mt-6 max-w-2xl">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
+                    Consórcio Platinum
+                  </h3>
+                  <p className="mt-4 text-base sm:text-lg leading-relaxed text-white/85">
+                    Planejamento patrimonial com foco em status, segurança e acompanhamento real do início ao fim.
+                  </p>
+                </div>
+
+                <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                  <Button
+                    variant="hero"
+                    size="lg"
+                    onClick={() => setShowForm(true)}
+                    className="w-full sm:w-auto bg-white text-primary hover:bg-white/95 shadow-lg hover:shadow-xl"
                   >
-                    ewerton@hirayamacorretora.com.br
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 justify-center md:justify-start">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-                  </div>
-                  <a 
-                    href="tel:+5511972896857" 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-xs sm:text-sm md:text-base"
+                    Solicitar simulação
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto border-2 border-white/35 bg-white/5 text-white hover:bg-white/12 backdrop-blur-sm"
+                    onClick={() => window.open(whatsappLink, "_blank")}
                   >
-                    (11) 97289-6857
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 justify-center md:justify-start">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-                  </div>
-                  <span className="text-primary-foreground/80 text-xs sm:text-sm md:text-base">São Paulo, SP</span>
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    WhatsApp
+                  </Button>
                 </div>
               </div>
-            </div>
 
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 md:mb-8 text-yellow-400">Links Rápidos</h4>
-              <ul className="space-y-2.5 sm:space-y-3 md:space-y-4 flex flex-col items-center md:items-start">
-                <li>
-                  <button 
-                    onClick={() => scrollToSection("#o-que-e")} 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-sm sm:text-base"
-                  >
-                    Operadoras
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => scrollToSection("#parceria")} 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-sm sm:text-base"
-                  >
-                    Parceria
-                  </button>
-                </li>
-                <li>
-                  <a 
-                    href="/conteudo" 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-sm sm:text-base"
-                  >
-                    Blog da Consultoria
-                  </a>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open(whatsappLink, '_blank')} 
-                    className="text-primary-foreground/80 hover:text-secondary transition-colors text-sm sm:text-base"
-                  >
-                    Falar com consultor
-                  </button>
-                </li>
-              </ul>
-            </div>
+              <div className="border-t border-white/10 lg:border-t-0 lg:border-l bg-black/10 p-7 sm:p-10 lg:p-12">
+                <div className="space-y-5">
+                  <div>
+                    <h4 className="text-sm uppercase tracking-[0.18em] text-white/60 mb-3">Contato direto</h4>
+                    <div className="space-y-3">
+                      <a
+                        href={`mailto:${EMAIL}`}
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white/90 transition-colors hover:bg-white/12"
+                      >
+                        <Mail className="h-5 w-5 text-secondary" />
+                        <span className="break-all">{EMAIL}</span>
+                      </a>
+                      <a
+                        href={`tel:${PHONE.replace(/\D/g, "")}`}
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white/90 transition-colors hover:bg-white/12"
+                      >
+                        <Phone className="h-5 w-5 text-secondary" />
+                        <span>{PHONE}</span>
+                      </a>
+                      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white/90">
+                        <MapPin className="h-5 w-5 text-secondary" />
+                        <span>{LOCATION}</span>
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Services */}
-            <div>
-              <h4 className="text-lg sm:text-xl font-semibold mb-6 sm:mb-8 text-yellow-400">Serviços</h4>
-              <ul className="space-y-3 sm:space-y-4 flex flex-col items-center md:items-start">
-                <li><span className="text-primary-foreground/80 text-sm sm:text-base">Comparativos entre operadoras</span></li>
-                <li><span className="text-primary-foreground/80 text-sm sm:text-base">Portabilidade de benefícios</span></li>
-                <li><span className="text-primary-foreground/80 text-sm sm:text-base">Orientação sobre PAT</span></li>
-                <li><span className="text-primary-foreground/80 text-sm sm:text-base">Redução de custos</span></li>
-                <li><span className="text-primary-foreground/80 text-sm sm:text-base">Integração com folha</span></li>
-              </ul>
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-white/15 bg-white/8 text-white hover:bg-white/15"
+                      onClick={() => scrollToSection("#tipos")}
+                    >
+                      Tipos
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-white/15 bg-white/8 text-white hover:bg-white/15"
+                      onClick={() => scrollToSection("#parceiros")}
+                    >
+                      Parceiros
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-white/15 bg-white/8 text-white hover:bg-white/15"
+                      onClick={() => scrollToSection("#depoimentos")}
+                    >
+                      Depoimentos
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-white/15 bg-white/8 text-white hover:bg-white/15"
+                      onClick={() => window.open(whatsappLink, "_blank")}
+                    >
+                      WhatsApp
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </AnimatedSection>
 
-        {/* CTA Section */}
-        <AnimatedSection animationType="scale" delay={100}>
-          <div className="bg-primary-hover rounded-3xl p-8 sm:p-10 md:p-12 mb-12 sm:mb-16 text-center shadow-xl border border-primary-foreground/10">
-            <div className="max-w-3xl mx-auto">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-yellow-400">
-                Pronto para otimizar seus benefícios?
-              </h3>
-              <p className="text-sm sm:text-base md:text-lg text-primary-foreground/90 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-                Agende uma reunião com um consultor e descubra como sua empresa pode 
-                economizar, ganhar eficiência fiscal e cuidar melhor dos colaboradores.
+        <AnimatedSection animationType="fade" delay={100}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-3xl border border-white/10 bg-white/6 p-6 sm:p-8 backdrop-blur-sm">
+              <h4 className="text-lg font-semibold mb-4 text-white">Serviços</h4>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-white/85">
+                <li className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3">Comparativos entre operadoras</li>
+                <li className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3">Portabilidade de benefícios</li>
+                <li className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3">Orientação sobre PAT</li>
+                <li className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3">Redução de custos</li>
+              </ul>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-primary/15 p-6 sm:p-8 backdrop-blur-sm">
+              <h4 className="text-lg font-semibold mb-4 text-white">Atendimento</h4>
+              <p className="text-white/85 text-sm sm:text-base leading-relaxed mb-6">
+                Agende uma reunião com um consultor e descubra como sua empresa pode ganhar eficiência, previsibilidade e suporte de ponta.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  variant="hero" 
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  variant="hero"
                   size="lg"
                   onClick={() => setShowForm(true)}
-                  className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                  className="w-full sm:w-auto bg-white text-primary hover:bg-white/95"
                 >
-                  Agendar reunião
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  Solicitar simulação
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm bg-white/5 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-                  onClick={() => window.open(whatsappLink, '_blank')}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm bg-white/5"
+                  onClick={() => window.open(whatsappLink, "_blank")}
                 >
-                  Falar com um consultor
+                  Falar com consultor
                 </Button>
               </div>
             </div>
           </div>
         </AnimatedSection>
-        
-        {/* Copyright Section */}
+
         <AnimatedSection animationType="fade" delay={200}>
-          <div className="border-t border-primary-foreground/20 pt-8 text-center">
-            <p className="text-primary-foreground/70 text-sm sm:text-base mb-2">
-              Site institucional
-            </p>
-            <p className="text-primary-foreground/60 text-xs sm:text-sm mb-2">
-              Criado por Ewerton Hirayama
-            </p>
-            <p className="text-primary-foreground/60 text-xs sm:text-sm">
-              Todos os direitos reservados.
-            </p>
+          <div className="border-t border-white/15 pt-8 mt-12 text-center text-white/70">
+            <p className="text-sm sm:text-base mb-2">Consórcio Platinum</p>
+            <p className="text-xs sm:text-sm">Criado por Ewerton Hirayama • Todos os direitos reservados.</p>
           </div>
         </AnimatedSection>
       </div>

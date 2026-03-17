@@ -4,13 +4,13 @@ import ConsorcioProblem from "@/components/consorcio/ConsorcioProblem";
 import ConsorcioSolution from "@/components/consorcio/ConsorcioSolution";
 import ConsorcioTypes from "@/components/consorcio/ConsorcioTypes";
 import ConsorcioAuthority from "@/components/consorcio/ConsorcioAuthority";
-import ConsorcioPartners from "@/components/consorcio/ConsorcioPartners";
+import ConsorcioProcess from "@/components/consorcio/ConsorcioProcess";
 import ConsorcioSocialProof from "@/components/consorcio/ConsorcioSocialProof";
 import ConsorcioCTA from "@/components/consorcio/ConsorcioCTA";
 import ConsorcioFooter from "@/components/consorcio/ConsorcioFooter";
 import { SEO } from "@/components/SEO";
 
-const Index = () => {
+const Consorcio = () => {
   return (
     <>
       <SEO
@@ -26,7 +26,7 @@ const Index = () => {
           <ConsorcioSolution />
           <ConsorcioTypes />
           <ConsorcioAuthority />
-          <ConsorcioPartners />
+          <ConsorcioProcess />
           <ConsorcioSocialProof />
           <ConsorcioCTA />
           <ConsorcioFooter />
@@ -36,4 +36,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Consorcio;

@@ -44,6 +44,8 @@ const leadSchema = z.object({
   mensagem: z.string().optional(),
   quantidadeCartoes: z.string().optional(),
   principalDor: z.string().optional(),
+  tipoConsorcio: z.string().optional(),
+  principalObjetivo: z.string().optional(),
 });
 
 type LeadFormValues = z.infer<typeof leadSchema>;
@@ -75,6 +77,7 @@ export const LeadFormModal = ({
   const { createLead, isLoading } = useCreateLead();
   const [isSuccess, setIsSuccess] = useState(false);
   const [formProgress, setFormProgress] = useState(0);
+  const isConsorcio = true; // Site focado em Consórcio Platinum
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
@@ -88,13 +91,17 @@ export const LeadFormModal = ({
       mensagem: '',
       quantidadeCartoes: '',
       principalDor: '',
+      tipoConsorcio: '',
+      principalObjetivo: '',
     },
   });
 
   // Calcular progresso do formulário
   const watchedValues = form.watch();
   useEffect(() => {
-    const fields = ['nome', 'email', 'telefone', 'empresa', 'cargo', 'mensagem', 'quantidadeCartoes', 'principalDor'];
+    const fields = isConsorcio 
+      ? ['nome', 'email', 'telefone', 'empresa', 'cargo', 'mensagem', 'tipoConsorcio', 'principalObjetivo']
+      : ['nome', 'email', 'telefone', 'empresa', 'cargo', 'mensagem', 'quantidadeCartoes', 'principalDor'];
     const filledFields = fields.filter(field => {
       const value = watchedValues[field as keyof LeadFormValues];
       return value && value.trim().length > 0;
@@ -343,6 +350,76 @@ export const LeadFormModal = ({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {isConsorcio ? (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="tipoConsorcio"
+                        render={({ field }) => {
+                          const hasValue = field.value && field.value.length > 0;
+                          return (
+                            <FormItem className="space-y-2">
+                              <FormLabel className="flex items-center gap-2 text-sm font-semibold">
+                                <CreditCard className={cn("h-4 w-4 transition-colors", hasValue ? "text-primary" : "text-muted-foreground")} />
+                                Tipo de consórcio
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className={cn(
+                                    "transition-all duration-200",
+                                    hasValue && "border-primary/50"
+                                  )}>
+                                    <SelectValue placeholder="Selecione o tipo" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="automovel">Consórcio automóvel</SelectItem>
+                                  <SelectItem value="imobiliario">Consórcio imobiliário</SelectItem>
+                                  <SelectItem value="empresarial">Consórcio empresarial</SelectItem>
+                                  <SelectItem value="investimento">Consórcio para investimento</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="principalObjetivo"
+                        render={({ field }) => {
+                          const hasValue = field.value && field.value.length > 0;
+                          return (
+                            <FormItem className="space-y-2">
+                              <FormLabel className="flex items-center gap-2 text-sm font-semibold">
+                                <AlertCircle className={cn("h-4 w-4 transition-colors", hasValue ? "text-primary" : "text-muted-foreground")} />
+                                Principal objetivo
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className={cn(
+                                    "transition-all duration-200",
+                                    hasValue && "border-primary/50"
+                                  )}>
+                                    <SelectValue placeholder="Selecione o objetivo" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="casa-propria">Casa própria</SelectItem>
+                                  <SelectItem value="veiculo">Veículo</SelectItem>
+                                  <SelectItem value="investimento">Investimento</SelectItem>
+                                  <SelectItem value="empresa">Para empresa</SelectItem>
+                                  <SelectItem value="outro">Outro</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
                   <FormField
                     control={form.control}
                     name="quantidadeCartoes"
@@ -410,6 +487,8 @@ export const LeadFormModal = ({
                       );
                     }}
                   />
+                    </>
+                  )}
                 </div>
 
                 <FormField

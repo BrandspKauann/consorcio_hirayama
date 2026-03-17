@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/admin/ErrorBoundary";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
+import Consorcio from "./pages/Consorcio";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
@@ -40,6 +41,7 @@ const App = () => (
               <RouteScrollToTop />
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/consorcio" element={<Consorcio />} />
                 <Route path="/conteudo" element={<Content />} />
                 <Route path="/conteudo/:slug" element={<ContentDetail />} />
                 <Route path="/salaryfits" element={<SalaryFits />} />

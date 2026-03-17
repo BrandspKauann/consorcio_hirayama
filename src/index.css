@@ -2,152 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system for VR Consulting - Corporate Benefits
-All colors MUST be HSL.
-Sophisticated purple palette: deep plum/berry purple + graphite + off-white
-Premium, trustworthy, mature - not flashy startup
-Consultoria em benefícios com inteligência, confiança e elegância.
+/* Design system - Consórcio Platinum
+Paleta verde claro principal - produto popular com percepção premium
+Status, segurança, autoridade, acessível para todos
+Estilo: fintech, banco digital, consultoria financeira
 */
 
 @layer base {
   :root {
-    /* Off-white background for breathing space */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 10%;
+    /* Fundo claro elegante */
+    --background: 0 0% 99%;
+    --foreground: 160 15% 15%;
 
-    /* Off-white cards */
+    /* Cards off-white */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 160 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 160 15% 15%;
 
-    /* Deep plum/berry purple - primary brand color */
-    /* Roxo profundo/ameixa - transmite inteligência e confiança */
-    --primary: 280 45% 35%;
+    /* Verde claro - cor principal (Consórcio Platinum) */
+    --primary: 152 45% 42%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 280 45% 40%;
+    --primary-hover: 152 45% 38%;
 
-    /* Warm gold/amber - complementary to purple, adds life and contrast */
-    /* Dourado/âmbar quente - complementar ao roxo, adiciona vida e contraste */
-    --secondary: 45 85% 55%;
+    /* Dourado/âmbar - complementar premium */
+    --secondary: 43 74% 49%;
     --secondary-foreground: 0 0% 10%;
-    --secondary-hover: 45 85% 60%;
+    --secondary-hover: 43 74% 54%;
 
-    /* Trust colors - purple variants with better contrast */
-    --trust-blue: 280 40% 50%;
-    --trust-blue-light: 280 40% 60%;
+    /* Azul escuro - autoridade e confiança */
+    --trust-blue: 215 50% 35%;
+    --trust-blue-light: 215 45% 45%;
     
-    /* Accent color - warm coral/orange for highlights */
-    /* Coral/laranja quente para destaques estratégicos */
-    --accent-warm: 15 75% 55%;
-    --accent-warm-light: 15 75% 65%;
+    --accent-warm: 43 74% 49%;
+    --accent-warm-light: 43 74% 60%;
     
-    /* Graphite gray - not pure black, sophisticated */
-    /* Grafite/preto carvão - elegante, não agressivo */
-    /* Aumentado contraste para melhor legibilidade */
-    --corporate-gray: 0 0% 25%;
-    --corporate-gray-light: 0 0% 45%;
+    --corporate-gray: 160 10% 25%;
+    --corporate-gray-light: 160 8% 45%;
 
-    /* Sophisticated gradients - deep purple with warm accents */
-    --gradient-hero: linear-gradient(135deg, hsl(280 45% 35%) 0%, hsl(280 40% 45%) 50%, hsl(280 35% 55%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
-    --gradient-cta: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(45 85% 60%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(280 45% 35%) 0%, hsl(15 75% 55%) 100%);
+    /* Gradientes - verde premium */
+    --gradient-hero: linear-gradient(135deg, hsl(152 45% 42%) 0%, hsl(152 40% 35%) 50%, hsl(160 45% 30%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(150 20% 98%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(152 45% 42%) 0%, hsl(152 50% 48%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(152 45% 42%) 0%, hsl(43 74% 49%) 100%);
 
-    /* Refined shadows - purple with warm accents */
-    --shadow-premium: 0 20px 60px -12px hsl(280 45% 35% / 0.2), 0 8px 24px -8px hsl(280 45% 35% / 0.12);
+    /* Sombras refinadas */
+    --shadow-premium: 0 20px 60px -12px hsl(152 45% 42% / 0.2), 0 8px 24px -8px hsl(152 45% 42% / 0.12);
     --shadow-card: 0 4px 24px -4px hsl(0 0% 15% / 0.06), 0 2px 8px -2px hsl(0 0% 15% / 0.03);
-    --shadow-gold: 0 8px 32px -4px hsl(45 85% 55% / 0.25);
+    --shadow-gold: 0 8px 32px -4px hsl(43 74% 49% / 0.25);
 
-    /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Light gray for dividers and subtle backgrounds */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 30%;
+    --muted: 150 15% 96%;
+    --muted-foreground: 160 10% 35%;
 
-    /* Accent - deep purple */
-    --accent: 280 40% 50%;
+    --accent: 152 45% 42%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Light borders - subtle dividers */
-    --border: 0 0% 90%;
-    --input: 0 0% 94%;
-    --ring: 280 40% 50%;
+    --border: 150 15% 90%;
+    --input: 150 15% 94%;
+    --ring: 152 45% 42%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 26%;
-    --sidebar-primary: 0 0% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 91%;
-    --sidebar-ring: 280 40% 50%;
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 160 15% 15%;
+    --sidebar-primary: 152 45% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 20% 96%;
+    --sidebar-accent-foreground: 160 15% 15%;
+    --sidebar-border: 150 15% 91%;
+    --sidebar-ring: 152 45% 42%;
   }
 
   .dark {
-    /* Graphite dark background - sophisticated, not pure black */
-    --background: 0 0% 8%;
+    --background: 160 15% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 12%;
+    --card: 160 15% 12%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 12%;
+    --popover: 160 15% 12%;
     --popover-foreground: 0 0% 95%;
 
-    /* Purple lighter in dark mode for contrast */
-    --primary: 280 40% 65%;
-    --primary-foreground: 0 0% 8%;
-    --primary-hover: 280 40% 70%;
+    --primary: 152 45% 55%;
+    --primary-foreground: 160 15% 8%;
+    --primary-hover: 152 45% 60%;
 
-    --secondary: 280 30% 60%;
-    --secondary-foreground: 0 0% 8%;
-    --secondary-hover: 280 30% 65%;
+    --secondary: 43 74% 55%;
+    --secondary-foreground: 160 15% 8%;
+    --secondary-hover: 43 74% 60%;
 
-    --muted: 0 0% 12%;
+    --muted: 160 15% 14%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 280 40% 65%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 152 45% 55%;
+    --accent-foreground: 160 15% 8%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Trust colors - dark mode */
-    --trust-blue: 280 40% 68%;
-    --trust-blue-light: 280 40% 75%;
+    --trust-blue: 215 45% 55%;
+    --trust-blue-light: 215 45% 65%;
     --corporate-gray: 0 0% 65%;
     --corporate-gray-light: 0 0% 75%;
 
-    /* Gradients - dark mode */
-    --gradient-hero: linear-gradient(135deg, hsl(280 45% 40%) 0%, hsl(280 40% 50%) 50%, hsl(280 35% 60%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 12%) 0%, hsl(0 0% 15%) 100%);
-    --gradient-cta: linear-gradient(135deg, hsl(280 40% 65%) 0%, hsl(280 40% 70%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(152 45% 35%) 0%, hsl(160 40% 28%) 50%, hsl(160 45% 22%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(160 15% 12%) 0%, hsl(160 15% 15%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(152 45% 50%) 0%, hsl(152 45% 55%) 100%);
 
-    /* Shadows - dark mode */
-    --shadow-premium: 0 20px 60px -12px hsl(280 40% 65% / 0.25), 0 8px 24px -8px hsl(280 40% 65% / 0.15);
+    --shadow-premium: 0 20px 60px -12px hsl(152 45% 35% / 0.3), 0 8px 24px -8px hsl(152 45% 35% / 0.2);
     --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.4), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
-    --shadow-gold: 0 8px 32px -4px hsl(280 40% 65% / 0.2);
+    --shadow-gold: 0 8px 32px -4px hsl(43 74% 49% / 0.2);
 
-    --border: 0 0% 18%;
-    --input: 0 0% 15%;
-    --ring: 280 40% 65%;
-    --sidebar-background: 0 0% 10%;
+    --border: 160 15% 18%;
+    --input: 160 15% 15%;
+    --ring: 152 45% 55%;
+    --sidebar-background: 160 15% 10%;
     --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 280 40% 65%;
-    --sidebar-primary-foreground: 0 0% 8%;
-    --sidebar-accent: 0 0% 16%;
+    --sidebar-primary: 152 45% 55%;
+    --sidebar-primary-foreground: 160 15% 8%;
+    --sidebar-accent: 160 15% 16%;
     --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 280 40% 65%;
+    --sidebar-border: 160 15% 16%;
+    --sidebar-ring: 152 45% 55%;
   }
 }
 
@@ -158,6 +141,7 @@ Consultoria em benefícios com inteligência, confiança e elegância.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
