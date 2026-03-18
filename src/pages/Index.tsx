@@ -5,6 +5,7 @@ import ConsorcioSolution from "@/components/consorcio/ConsorcioSolution";
 import ConsorcioTypes from "@/components/consorcio/ConsorcioTypes";
 import ConsorcioAuthority from "@/components/consorcio/ConsorcioAuthority";
 import ConsorcioPartners from "@/components/consorcio/ConsorcioPartners";
+import ConsorcioBlogPreview from "@/components/consorcio/ConsorcioBlogPreview";
 import ConsorcioSocialProof from "@/components/consorcio/ConsorcioSocialProof";
 import ConsorcioCTA from "@/components/consorcio/ConsorcioCTA";
 import ConsorcioFooter from "@/components/consorcio/ConsorcioFooter";
@@ -27,6 +28,7 @@ const Index = () => {
           <ConsorcioTypes />
           <ConsorcioAuthority />
           <ConsorcioPartners />
+          <ConsorcioBlogPreview />
           <ConsorcioSocialProof />
           <ConsorcioCTA />
           <ConsorcioFooter />

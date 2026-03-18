@@ -24,6 +24,7 @@ const Header = () => {
   const menuItems: Array<{ label: string; href: string; type: "route" | "anchor" }> = [
     { label: "Início", href: "/", type: "route" },
     { label: "Consórcio", href: "/consorcio", type: "route" },
+    { label: "Blog", href: "/conteudo", type: "route" },
     { label: "Tipos", href: "#tipos", type: "anchor" },
     { label: "Processo", href: "#processo", type: "anchor" },
     { label: "Contato", href: "#cta", type: "anchor" },

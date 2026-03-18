@@ -168,9 +168,18 @@ const Footer = () => {
         </AnimatedSection>
 
         <AnimatedSection animationType="fade" delay={200}>
-          <div className="border-t border-white/15 pt-8 mt-12 text-center text-white/70">
-            <p className="text-sm sm:text-base mb-2">Consórcio Platinum</p>
-            <p className="text-xs sm:text-sm">Criado por Ewerton Hirayama • Todos os direitos reservados.</p>
+          <div className="border-t border-white/15 pt-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-3 text-white/70">
+            <div className="text-center md:text-left">
+              <p className="text-sm sm:text-base mb-1">Consórcio Platinum</p>
+              <p className="text-xs sm:text-sm">Criado por Ewerton Hirayama • Todos os direitos reservados.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => (window.location.href = "/admin/login")}
+              className="text-xs sm:text-sm text-white/70 hover:text-white underline-offset-4 hover:underline transition-colors"
+            >
+              Área do editor (gerenciar conteúdos)
+            </button>
           </div>
         </AnimatedSection>
       </div>
