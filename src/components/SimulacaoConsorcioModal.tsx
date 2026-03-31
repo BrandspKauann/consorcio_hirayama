@@ -31,9 +31,6 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle2, Home, Car, TrendingUp, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const WHATSAPP_LINK = "https://wa.link/3gwhbl";
-const WHATSAPP_NUMBER = "5511972896857";
-
 type TipoConsorcio = "imoveis" | "automoveis" | "investimento";
 
 const baseSchema = z.object({
@@ -76,41 +73,6 @@ const formatPhone = (value: string) => {
     return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
   }
   return numbers.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
-};
-
-const buildWhatsAppMessage = (
-  tipo: TipoConsorcio,
-  data: ImoveisValues | AutomoveisValues | InvestimentoValues
-): string => {
-  const tipoLabel =
-    tipo === "imoveis"
-      ? "Imóveis"
-      : tipo === "automoveis"
-      ? "Automóveis"
-      : "Investimento";
-
-  let msg = `Olá! Gostaria de simular consórcio de *${tipoLabel}*.\n\n`;
-  msg += `Nome: ${data.nome}\n`;
-  msg += `Email: ${data.email}\n`;
-  msg += `Telefone: ${data.telefone}\n\n`;
-
-  if (tipo === "imoveis" && "tipoImovel" in data) {
-    msg += `Tipo de imóvel: ${data.tipoImovel}\n`;
-    if (data.valorDesejado) msg += `Valor desejado: ${data.valorDesejado}\n`;
-    if (data.regiao) msg += `Região: ${data.regiao}\n`;
-  } else if (tipo === "automoveis" && "tipoVeiculo" in data) {
-    msg += `Tipo de veículo: ${data.tipoVeiculo}\n`;
-    if (data.valorDesejado) msg += `Valor desejado: ${data.valorDesejado}\n`;
-    if (data.novoOuUsado) msg += `Novo ou usado: ${data.novoOuUsado}\n`;
-  } else if (tipo === "investimento" && "objetivoInvestimento" in data) {
-    if (data.valorAproximado) msg += `Valor aproximado: ${data.valorAproximado}\n`;
-    if (data.prazoDesejado) msg += `Prazo desejado: ${data.prazoDesejado}\n`;
-    if (data.objetivoInvestimento) msg += `Objetivo: ${data.objetivoInvestimento}\n`;
-  }
-
-  if (data.mensagem) msg += `\nMensagem: ${data.mensagem}`;
-
-  return encodeURIComponent(msg);
 };
 
 interface SimulacaoConsorcioModalProps {
@@ -202,28 +164,22 @@ export const SimulacaoConsorcioModal = ({
   ) => {
     if (!tipoSelecionado) return;
 
-    try {
-      await createLead({
-        nome: data.nome,
-        email: data.email,
-        telefone: data.telefone,
-        mensagem: data.mensagem,
-        origem: `simulacao_whatsapp_${tipoSelecionado}`,
-        metadata: { tipoConsorcio: tipoSelecionado, ...data },
-      });
+    const result = await createLead({
+      nome: data.nome,
+      email: data.email,
+      telefone: data.telefone,
+      mensagem: data.mensagem,
+      origem: `simulacao_${tipoSelecionado}`,
+      tipoConsorcio: tipoSelecionado,
+      metadata: { tipoConsorcio: tipoSelecionado, ...data },
+    });
 
-      const msg = buildWhatsAppMessage(tipoSelecionado, data);
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-
+    if (result.success) {
       setIsSuccess(true);
-      toast.success("Formulário enviado! Redirecionando para o WhatsApp...");
-
-      setTimeout(() => {
-        window.open(whatsappUrl, "_blank");
-        handleClose();
-      }, 1500);
-    } catch (error) {
-      toast.error("Erro ao enviar. Tente novamente.");
+      toast.success("Recebemos seus dados. Entraremos em contato em breve.");
+      setTimeout(() => handleClose(), 2200);
+    } else {
+      toast.error("Não foi possível enviar. Tente novamente.");
     }
   };
 
@@ -355,7 +311,7 @@ export const SimulacaoConsorcioModal = ({
                 ) : (
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                 )}
-                Enviar e abrir WhatsApp
+                Enviar
               </Button>
             </div>
           </form>
@@ -497,7 +453,7 @@ export const SimulacaoConsorcioModal = ({
                 ) : (
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                 )}
-                Enviar e abrir WhatsApp
+                Enviar
               </Button>
             </div>
           </form>
@@ -641,7 +597,7 @@ export const SimulacaoConsorcioModal = ({
                 ) : (
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                 )}
-                Enviar e abrir WhatsApp
+                Enviar
               </Button>
             </div>
           </form>
@@ -660,15 +616,15 @@ export const SimulacaoConsorcioModal = ({
             <CheckCircle2 className="h-16 w-16 text-primary mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">Enviado com sucesso!</h3>
             <p className="text-muted-foreground">
-              Redirecionando para o WhatsApp...
+              Obrigado. Em breve entraremos em contato.
             </p>
           </div>
         ) : step === "selecao" ? (
           <>
             <DialogHeader>
-              <DialogTitle>Simular consórcio no WhatsApp</DialogTitle>
+              <DialogTitle>Simular consórcio</DialogTitle>
               <DialogDescription>
-                Selecione o tipo de consórcio que deseja simular:
+                Escolha o tipo de consórcio:
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 gap-3 mt-4">
@@ -702,7 +658,7 @@ export const SimulacaoConsorcioModal = ({
                   : "Investimento"}
               </DialogTitle>
               <DialogDescription>
-                Preencha os dados para enviarmos sua simulação no WhatsApp.
+                Preencha os dados para recebermos sua solicitação.
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4">{renderForm()}</div>

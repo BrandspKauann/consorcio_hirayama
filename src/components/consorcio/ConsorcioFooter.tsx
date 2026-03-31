@@ -29,12 +29,17 @@ const ConsorcioFooter = () => {
             <div className="lg:col-span-2">
               <div className="mb-5 sm:mb-6 md:mb-8">
                 <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 justify-center md:justify-start">
-                  <div className="flex flex-col items-center md:items-start">
-                    <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-1 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
-                      Consórcio Platinum
+                  <div className="inline-flex flex-col items-end leading-none">
+                    <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl whitespace-nowrap">
+                      <span className="font-light bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+                        Consórcio{" "}
+                      </span>
+                      <span className="font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+                        Platinum
+                      </span>
                     </h3>
-                    <p className="text-xs sm:text-sm text-primary-foreground/70 font-medium">
-                      Especialistas em Benefícios
+                    <p className="text-[10px] sm:text-xs text-primary-foreground/70 font-medium tracking-wide -mt-0.5">
+                      By Hirayama
                     </p>
                   </div>
                 </div>

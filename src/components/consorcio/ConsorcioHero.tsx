@@ -31,12 +31,15 @@ const ConsorcioHero = () => {
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 relative z-10">
         <AnimatedSection animationType="slide-up">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-sm sm:text-base uppercase tracking-[0.25em] text-white/80 mb-3">
-              Planejamento patrimonial inteligente
-            </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-3 sm:mb-4 leading-tight">
-              Consórcio Platinum
-            </h1>
+            <div className="inline-flex flex-col items-end mx-auto mb-4 sm:mb-5 leading-none">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-none whitespace-nowrap">
+                <span className="font-light">Consórcio </span>
+                <span className="font-bold">Platinum</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-white/80 tracking-wide -mt-1 sm:-mt-1.5">
+                By Hirayama
+              </p>
+            </div>
             <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-medium mb-6 sm:mb-8 max-w-2xl mx-auto">
               Estratégia inteligente para construir patrimônio sem depender de financiamento tradicional.
             </p>
@@ -48,7 +51,7 @@ const ConsorcioHero = () => {
                 className="w-full sm:w-auto min-h-[56px] sm:min-h-[60px] text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 bg-white text-primary hover:bg-white/95 font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
                 onClick={() => setShowModal(true)}
               >
-                Simular consórcio no WhatsApp
+                Simular consórcio
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>

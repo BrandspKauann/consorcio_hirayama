@@ -11,9 +11,28 @@ export interface LeadData {
   mensagem?: string;
   quantidadeCartoes?: string;
   principalDor?: string;
+  tipoConsorcio?: string;
+  principalObjetivo?: string;
   origem?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
+
+const TIPO_CONSORCIO_LABELS: Record<string, string> = {
+  imoveis: "Imóveis",
+  automoveis: "Automóveis",
+  investimento: "Investimento",
+};
+
+const resolveTipoConsorcio = (lead: LeadData): string | undefined => {
+  const fromMeta = lead.metadata?.tipoConsorcio;
+  if (typeof fromMeta === "string" && fromMeta) return fromMeta;
+  if (lead.tipoConsorcio) return lead.tipoConsorcio;
+  const origem = lead.origem || "";
+  const m = origem.match(
+    /simulacao_(?:whatsapp_)?(imoveis|automoveis|investimento)/
+  );
+  return m ? m[1] : undefined;
+};
 
 const STORAGE_KEY = 'pending_leads';
 
@@ -39,22 +58,19 @@ const isProduction = (): boolean => {
   return false;
 };
 
-// URL do webhook - configuração baseada no ambiente
-// Desenvolvimento: usa VITE_LEAD_WEBHOOK_URL do .env ou localhost padrão
-// Produção: usa API route do Vercel (/api/webhook/lead)
+/**
+ * Desenvolvimento: SEMPRE URL relativa → mesmo host do Vite → proxy em vite.config
+ * encaminha para o n8n (host.docker.internal:5678 ou N8N_WEBHOOK_TARGET).
+ * Nunca chame http://host.docker.internal/... direto do navegador: CORS bloqueia.
+ * Produção: /api/webhook/lead (servidor) → LEAD_WEBHOOK_URL no Vercel.
+ */
+const WEBHOOK_PATH_DEV = "/webhook-test/consorcio";
+
 const getWebhookUrl = (): string => {
-  const isProd = isProduction();
-  
-  if (isProd) {
-    // Em produção, usar API route do Vercel (resolve problemas de CORS e mixed content)
-    console.log('🌐 Ambiente detectado: PRODUÇÃO - usando API route do Vercel');
-    return '/api/webhook/lead';
-  } else {
-    // Em desenvolvimento, usar URL direta do .env
-    const devUrl = import.meta.env.VITE_LEAD_WEBHOOK_URL || 'http://localhost:5678/webhook/webhookn8n';
-    console.log('💻 Ambiente detectado: DESENVOLVIMENTO - usando URL direta:', devUrl);
-    return devUrl;
+  if (isProduction()) {
+    return "/api/webhook/lead";
   }
+  return WEBHOOK_PATH_DEV;
 };
 
 // Chamar webhook do n8n
@@ -67,6 +83,21 @@ const callLeadWebhook = async (leadData: LeadData) => {
       return;
     }
 
+    const tipoConsorcio = resolveTipoConsorcio(leadData);
+    const tipoConsorcioLabel = tipoConsorcio
+      ? TIPO_CONSORCIO_LABELS[tipoConsorcio] || tipoConsorcio
+      : "Contato geral";
+
+    const metadataMerged: Record<string, unknown> = {
+      ...(leadData.metadata || {}),
+      tipoConsorcio: tipoConsorcio ?? leadData.metadata?.tipoConsorcio,
+      principalObjetivo: leadData.principalObjetivo ?? leadData.metadata?.principalObjetivo,
+      quantidadeCartoes: leadData.quantidadeCartoes,
+      principalDor: leadData.principalDor,
+    };
+
+    const tipoSimulacaoId = tipoConsorcio ?? null;
+
     const payload = {
       nome: leadData.nome,
       email: leadData.email,
@@ -76,20 +107,30 @@ const callLeadWebhook = async (leadData: LeadData) => {
       mensagem: leadData.mensagem,
       quantidadeCartoes: leadData.quantidadeCartoes,
       principalDor: leadData.principalDor,
-      origem: leadData.origem || 'formulario_site',
+      tipoSimulacaoId,
+      tipoConsorcio: tipoSimulacaoId,
+      tipoConsorcioLabel,
+      principalObjetivo: leadData.principalObjetivo,
+      origem: leadData.origem || "formulario_site",
       timestamp: new Date().toISOString(),
       url: window.location.href,
       userAgent: navigator.userAgent,
+      metadata: metadataMerged,
     };
 
-    const environment = isProduction() ? 'PRODUÇÃO' : 'DESENVOLVIMENTO';
-    console.log(`🚀 [${environment}] Chamando webhook n8n:`, webhookUrl);
+    const environment = isProduction() ? "PRODUÇÃO" : "DESENVOLVIMENTO";
+    console.log(
+      `🚀 [${environment}] POST webhook:`,
+      webhookUrl,
+      isProduction() ? "" : "(proxy Vite → n8n, veja N8N_WEBHOOK_TARGET no .env)"
+    );
     console.log('📦 Payload:', payload);
 
     const response = await fetch(webhookUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
       },
       body: JSON.stringify(payload),
     });
@@ -101,32 +142,37 @@ const callLeadWebhook = async (leadData: LeadData) => {
     });
 
     if (!response.ok) {
-      let errorText = 'Sem resposta';
+      let errorText = "Sem resposta";
       try {
         const errorData = await response.json();
-        errorText = errorData.message || errorData.error || JSON.stringify(errorData);
+        errorText =
+          errorData.message || errorData.error || JSON.stringify(errorData);
       } catch {
-        errorText = await response.text().catch(() => 'Sem resposta');
+        errorText = await response.text().catch(() => "Sem resposta");
       }
-      
-      // Verificar se o erro é de webhook não registrado
-      if (response.status === 404 || errorText.includes('not registered') || errorText.includes('not found')) {
-        console.warn('⚠️ Webhook não encontrado no n8n. Certifique-se de que:');
-        console.warn('   1. O workflow está criado no n8n');
-        console.warn('   2. O webhook está configurado com o path correto: /webhook/webhookn8n');
-        console.warn('   3. O workflow está ATIVO (toggle no canto superior direito)');
-        if (isProduction) {
-          console.warn('   4. A variável LEAD_WEBHOOK_URL está configurada no Vercel Dashboard');
-        } else {
-          console.warn(`   4. A URL do webhook está correta: ${webhookUrl}`);
-        }
+
+      if (
+        response.status === 404 ||
+        errorText.includes("not registered") ||
+        errorText.includes("not found")
+      ) {
+        console.warn("⚠️ Webhook não encontrado no n8n. Verifique URL, workflow ativo e método POST.");
+        console.warn(`   URL usada: ${webhookUrl}`);
       }
-      
+
       throw new Error(`Webhook retornou status ${response.status}: ${errorText}`);
     }
 
-    const responseData = await response.json().catch(() => null);
-    console.log(`✅ [${environment}] Webhook n8n chamado com sucesso!`, responseData);
+    const raw = await response.text();
+    let responseData: unknown = null;
+    if (raw) {
+      try {
+        responseData = JSON.parse(raw) as unknown;
+      } catch {
+        responseData = raw;
+      }
+    }
+    console.log(`✅ [${environment}] Webhook OK`, responseData);
   } catch (error: any) {
     console.error('❌ Erro ao chamar webhook n8n:', error);
     console.error('Detalhes:', {
@@ -214,59 +260,54 @@ export const useCreateLead = () => {
     let savedToLocalStorage = false;
 
     try {
-      // Tentativa 1: Salvar no Supabase
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([{
-          nome: leadData.nome,
-          email: leadData.email,
-          telefone: leadData.telefone,
-          empresa: leadData.empresa,
-          cargo: leadData.cargo,
-          mensagem: leadData.mensagem,
-          origem: leadData.origem || 'formulario_site',
-          metadata: {
-            ...leadData.metadata,
-            quantidadeCartoes: leadData.quantidadeCartoes,
-            principalDor: leadData.principalDor,
-            userAgent: navigator.userAgent,
-            timestamp: new Date().toISOString(),
-            url: window.location.href
-          }
-        }])
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("leads")
+          .insert([
+            {
+              nome: leadData.nome,
+              email: leadData.email,
+              telefone: leadData.telefone,
+              empresa: leadData.empresa,
+              cargo: leadData.cargo,
+              mensagem: leadData.mensagem,
+              origem: leadData.origem || "formulario_site",
+              metadata: {
+                ...leadData.metadata,
+                quantidadeCartoes: leadData.quantidadeCartoes,
+                principalDor: leadData.principalDor,
+                tipoConsorcio: leadData.tipoConsorcio ?? leadData.metadata?.tipoConsorcio,
+                principalObjetivo: leadData.principalObjetivo,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+              },
+            },
+          ])
+          .select()
+          .single();
 
-      if (error) throw error;
-      
-      savedToDatabase = true;
-      console.log('✅ Lead salvo no banco:', data);
+        if (error) throw error;
 
-      // Chamar webhook do n8n após salvar com sucesso
-      await callLeadWebhook(leadData);
-
-    } catch (error: any) {
-      console.error('❌ Erro ao salvar no Supabase:', error);
-      
-      // Tentativa 2: Salvar no localStorage como fallback
-      savedToLocalStorage = saveToLocalStorage(leadData);
-      
-      if (savedToLocalStorage) {
-        console.log('💾 Lead salvo no localStorage como fallback');
-        // Chamar webhook mesmo se salvou no localStorage
-        await callLeadWebhook(leadData);
-        // Tentar sincronizar em background
-        setTimeout(() => syncPendingLeads(), 2000);
+        savedToDatabase = true;
+        console.log("✅ Lead salvo no banco:", data);
+      } catch (error: unknown) {
+        console.error("❌ Erro ao salvar no Supabase:", error);
+        savedToLocalStorage = saveToLocalStorage(leadData);
+        if (savedToLocalStorage) {
+          console.log("💾 Lead salvo no localStorage como fallback");
+          setTimeout(() => syncPendingLeads(), 2000);
+        }
       }
+    } finally {
+      await callLeadWebhook(leadData);
+      setIsLoading(false);
     }
 
-    setIsLoading(false);
-
-    // Retornar status para feedback ao usuário
     return {
       success: savedToDatabase || savedToLocalStorage,
       savedToDatabase,
-      savedToLocalStorage
+      savedToLocalStorage,
     };
   };
 

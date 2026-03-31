@@ -32,9 +32,15 @@ const Footer = () => {
                 </div>
 
                 <div className="mt-6 max-w-2xl">
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
-                    Consórcio Platinum
-                  </h3>
+                  <div className="inline-flex flex-col items-end leading-none">
+                    <h3 className="text-3xl sm:text-4xl md:text-5xl tracking-tight text-white whitespace-nowrap">
+                      <span className="font-light">Consórcio </span>
+                      <span className="font-semibold">Platinum</span>
+                    </h3>
+                    <p className="text-sm sm:text-base font-normal text-white/75 tracking-wide -mt-1">
+                      By Hirayama
+                    </p>
+                  </div>
                   <p className="mt-4 text-base sm:text-lg leading-relaxed text-white/85">
                     Planejamento patrimonial com foco em status, segurança e acompanhamento real do início ao fim.
                   </p>
@@ -168,18 +174,13 @@ const Footer = () => {
         </AnimatedSection>
 
         <AnimatedSection animationType="fade" delay={200}>
-          <div className="border-t border-white/15 pt-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-3 text-white/70">
-            <div className="text-center md:text-left">
-              <p className="text-sm sm:text-base mb-1">Consórcio Platinum</p>
-              <p className="text-xs sm:text-sm">Criado por Ewerton Hirayama • Todos os direitos reservados.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => (window.location.href = "/admin/login")}
-              className="text-xs sm:text-sm text-white/70 hover:text-white underline-offset-4 hover:underline transition-colors"
-            >
-              Área do editor (gerenciar conteúdos)
-            </button>
+          <div className="border-t border-white/15 pt-8 mt-12 text-center text-white/70">
+            <p className="text-sm sm:text-base mb-1">
+              <span className="font-light">Consórcio </span>
+              <span className="font-semibold">Platinum</span>
+              <span className="text-white/70"> · By Hirayama</span>
+            </p>
+            <p className="text-xs sm:text-sm">Criado por Ewerton Hirayama • Todos os direitos reservados.</p>
           </div>
         </AnimatedSection>
       </div>

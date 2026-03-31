@@ -2,22 +2,19 @@ import { useAllPublishedArticles } from "@/hooks/useArticles";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Loader2, Play, FileText } from "lucide-react";
+import { ArrowRight, BookOpen, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Article } from "@/types/article";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
-import { ErrorBoundary } from "@/components/admin/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const Content = () => {
   const { data: articles, isLoading, error, isError } = useAllPublishedArticles();
   const navigate = useNavigate();
   const hasArticles = Boolean(articles && articles.length > 0);
   const showEmpty = !isLoading && !isError && !hasArticles;
-
-  const getIcon = (type: Article["type"]) =>
-    type === "video" ? <Play className="h-4 w-4" /> : <FileText className="h-4 w-4" />;
 
   const openArticle = (article: Article) => {
     const slugOrId = article.slug || article.id;
@@ -127,11 +124,8 @@ const Content = () => {
               )}
 
               {showEmpty && (
-                <div className="text-center py-20 space-y-4 text-muted-foreground">
-                  <p>Ainda não há artigos publicados.</p>
-                  <Button variant="outline" asChild>
-                    <a href="/admin/login">Acessar área do editor</a>
-                  </Button>
+                <div className="text-center py-20 text-muted-foreground">
+                  <p>Ainda não há artigos publicados. Volte em breve.</p>
                 </div>
               )}
             </ErrorBoundary>

@@ -69,12 +69,17 @@ const Header = () => {
         <div className="flex items-center justify-between md:justify-between relative">
           <div className="flex-1 flex justify-center md:justify-start md:flex-initial">
             <a href="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="flex flex-col items-center md:items-start">
-                <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent group-hover:opacity-90 transition-all">
-                  Consórcio Platinum
+              <div className="inline-flex flex-col items-end leading-none">
+                <span className="text-base sm:text-lg md:text-xl whitespace-nowrap group-hover:opacity-90 transition-all">
+                  <span className="font-light bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+                    Consórcio{" "}
+                  </span>
+                  <span className="font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+                    Platinum
+                  </span>
                 </span>
-                <span className="text-[10px] sm:text-xs font-medium hidden sm:block text-muted-foreground">
-                  Planejamento patrimonial inteligente
+                <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground tracking-wide -mt-0.5">
+                  By Hirayama
                 </span>
               </div>
             </a>
@@ -119,8 +124,16 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] sm:w-[320px]">
                 <SheetHeader>
-                  <SheetTitle className="text-left text-lg sm:text-xl text-primary">
-                    Consórcio Platinum
+                  <SheetTitle className="text-left font-normal leading-tight">
+                    <span className="inline-flex flex-col items-end leading-none">
+                      <span className="text-lg sm:text-xl text-primary whitespace-nowrap">
+                        <span className="font-light">Consórcio </span>
+                        <span className="font-bold">Platinum</span>
+                      </span>
+                      <span className="text-[10px] font-medium text-muted-foreground tracking-wide -mt-0.5">
+                        By Hirayama
+                      </span>
+                    </span>
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-2 mt-6 sm:mt-8">

@@ -9,10 +9,15 @@ interface LeadPayload {
   mensagem?: string;
   quantidadeCartoes?: string;
   principalDor?: string;
+  tipoSimulacaoId?: string | null;
+  tipoConsorcio?: string;
+  tipoConsorcioLabel?: string;
+  principalObjetivo?: string;
   origem?: string;
   timestamp?: string;
   url?: string;
   userAgent?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export default async function handler(
@@ -30,7 +35,10 @@ export default async function handler(
   try {
     // Obter URL do webhook da variável de ambiente
     // No Vercel, use LEAD_WEBHOOK_URL (sem prefixo VITE_)
-    const webhookUrl = process.env.LEAD_WEBHOOK_URL || process.env.VITE_LEAD_WEBHOOK_URL;
+    const webhookUrl =
+      process.env.LEAD_WEBHOOK_URL ||
+      process.env.CONSORCIO_WEBHOOK_URL ||
+      process.env.VITE_LEAD_WEBHOOK_URL;
 
     if (!webhookUrl) {
       console.error('❌ LEAD_WEBHOOK_URL não configurada no Vercel');
@@ -60,10 +68,15 @@ export default async function handler(
       mensagem: payload.mensagem || '',
       quantidadeCartoes: payload.quantidadeCartoes || '',
       principalDor: payload.principalDor || '',
+      tipoSimulacaoId: payload.tipoSimulacaoId ?? payload.tipoConsorcio ?? null,
+      tipoConsorcio: payload.tipoConsorcio || '',
+      tipoConsorcioLabel: payload.tipoConsorcioLabel || '',
+      principalObjetivo: payload.principalObjetivo || '',
       origem: payload.origem || 'formulario_site',
       timestamp: payload.timestamp || new Date().toISOString(),
       url: payload.url || '',
       userAgent: payload.userAgent || '',
+      metadata: payload.metadata || {},
     };
 
     console.log('🚀 [Vercel API] Chamando webhook n8n:', webhookUrl);

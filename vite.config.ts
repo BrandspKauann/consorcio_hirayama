@@ -1,14 +1,12 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
-// Plugin para desabilitar CSP em desenvolvimento
 const disableCSPPlugin = (): Plugin => {
   return {
     name: "disable-csp",
     configureServer(server) {
       server.middlewares.use((_req, res, next) => {
-        // Remove qualquer header CSP em desenvolvimento
         if (typeof res.removeHeader === "function") {
           res.removeHeader("Content-Security-Policy");
           res.removeHeader("X-Content-Security-Policy");
@@ -21,53 +19,58 @@ const disableCSPPlugin = (): Plugin => {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "0.0.0.0", // Aceita conexões de qualquer interface (IPv4 e IPv6)
-    port: 3000,
-    strictPort: false, // Permite usar outra porta se 3000 estiver ocupada
-    hmr: {
-      overlay: false, // Desabilita overlay de erros que pode causar problemas com CSP
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  /** Destino do n8n visto pelo Node (Vite), não pelo navegador — evita CORS */
+  const n8nProxyTarget =
+    env.N8N_WEBHOOK_TARGET || "http://host.docker.internal:5678";
+
+  return {
+    server: {
+      host: "0.0.0.0",
+      port: 3000,
+      strictPort: false,
+      hmr: {
+        overlay: false,
+      },
+      headers: {
+        "Content-Security-Policy":
+          mode === "development"
+            ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'; base-uri 'self';"
+            : undefined,
+      },
+      proxy:
+        mode === "development"
+          ? {
+              "/webhook-test": {
+                target: n8nProxyTarget,
+                changeOrigin: true,
+                secure: false,
+              },
+            }
+          : undefined,
     },
-    // Headers para desenvolvimento - permite eval necessário para HMR
-    // Em produção, nenhum header CSP é adicionado (deve ser configurado no servidor)
-    headers: {
-      "Content-Security-Policy": mode === "development" 
-        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'; base-uri 'self';"
-        : undefined,
-    },
-  },
-  build: {
-    // Garante que sourcemaps não usem eval em produção
-    sourcemap: mode === "development" ? "inline" : false,
-    // Minificação sem eval
-    minify: "esbuild",
-    rollupOptions: {
-      output: {
-        // Evita eval em chunks
-        format: "es",
+    build: {
+      sourcemap: mode === "development" ? "inline" : false,
+      minify: "esbuild",
+      rollupOptions: {
+        output: {
+          format: "es",
+        },
       },
     },
-  },
-  plugins: [
-    react(), 
-    ...(mode === "development" 
-      ? [
-          // lovable-tagger removido para evitar problemas no build do Vercel
-          // Se necessário, pode ser adicionado manualmente apenas em desenvolvimento local
-          disableCSPPlugin(),
-        ]
-      : []
-    ),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    plugins: [
+      react(),
+      ...(mode === "development" ? [disableCSPPlugin()] : []),
+    ],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
-  esbuild: {
-    legalComments: "none",
-    // Garante que esbuild não use eval
-    format: "esm",
-  },
-}));
+    esbuild: {
+      legalComments: "none",
+      format: "esm",
+    },
+  };
+});

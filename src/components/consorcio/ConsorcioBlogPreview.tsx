@@ -97,7 +97,7 @@ const ConsorcioBlogPreview = () => {
         {!isLoading && visibleArticles.length === 0 && (
           <AnimatedSection animationType="fade">
             <div className="text-center py-12 text-muted-foreground text-sm">
-              Ainda não há artigos publicados. Assim que você criar conteúdos no gerenciador, eles aparecerão aqui.
+              Ainda não há artigos publicados. Volte em breve.
             </div>
           </AnimatedSection>
         )}
