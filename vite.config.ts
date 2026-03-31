@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
       proxy:
         mode === "development"
           ? {
-              "/webhook-test": {
+              "/webhook": {
                 target: n8nProxyTarget,
                 changeOrigin: true,
                 secure: false,

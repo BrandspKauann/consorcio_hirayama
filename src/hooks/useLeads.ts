@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { LEAD_WEBHOOK_DEV_PATH } from '@/config/leadWebhook';
 
 export interface LeadData {
   nome: string;
@@ -59,18 +60,15 @@ const isProduction = (): boolean => {
 };
 
 /**
- * Desenvolvimento: SEMPRE URL relativa → mesmo host do Vite → proxy em vite.config
- * encaminha para o n8n (host.docker.internal:5678 ou N8N_WEBHOOK_TARGET).
- * Nunca chame http://host.docker.internal/... direto do navegador: CORS bloqueia.
- * Produção: /api/webhook/lead (servidor) → LEAD_WEBHOOK_URL no Vercel.
+ * Desenvolvimento: POST em LEAD_WEBHOOK_DEV_PATH → proxy Vite (/webhook → N8N_WEBHOOK_TARGET)
+ * → única URL oficial em @/config/leadWebhook (host.docker.internal:5678/webhook/consorcio).
+ * Produção: POST /api/webhook/lead → mesma URL oficial no servidor (ver api/webhook/lead).
  */
-const WEBHOOK_PATH_DEV = "/webhook-test/consorcio";
-
 const getWebhookUrl = (): string => {
   if (isProduction()) {
     return "/api/webhook/lead";
   }
-  return WEBHOOK_PATH_DEV;
+  return LEAD_WEBHOOK_DEV_PATH;
 };
 
 // Chamar webhook do n8n
@@ -122,7 +120,7 @@ const callLeadWebhook = async (leadData: LeadData) => {
     console.log(
       `🚀 [${environment}] POST webhook:`,
       webhookUrl,
-      isProduction() ? "" : "(proxy Vite → n8n, veja N8N_WEBHOOK_TARGET no .env)"
+      isProduction() ? "" : "(proxy /webhook → N8N_WEBHOOK_TARGET)"
     );
     console.log('📦 Payload:', payload);
 

@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { OFFICIAL_LEAD_N8N_WEBHOOK_URL } from '../../src/config/leadWebhook';
 
 interface LeadPayload {
   nome: string;
@@ -33,20 +34,10 @@ export default async function handler(
   }
 
   try {
-    // Obter URL do webhook da variável de ambiente
-    // No Vercel, use LEAD_WEBHOOK_URL (sem prefixo VITE_)
+    // Único destino padrão: OFFICIAL_LEAD_N8N_WEBHOOK_URL (src/config/leadWebhook).
+    // Opcional: LEAD_WEBHOOK_URL só se o host público do n8n for diferente (path deve ser /webhook/consorcio).
     const webhookUrl =
-      process.env.LEAD_WEBHOOK_URL ||
-      process.env.CONSORCIO_WEBHOOK_URL ||
-      process.env.VITE_LEAD_WEBHOOK_URL;
-
-    if (!webhookUrl) {
-      console.error('❌ LEAD_WEBHOOK_URL não configurada no Vercel');
-      return res.status(500).json({
-        error: 'Webhook URL not configured',
-        message: 'A variável de ambiente LEAD_WEBHOOK_URL não está configurada no Vercel'
-      });
-    }
+      process.env.LEAD_WEBHOOK_URL || OFFICIAL_LEAD_N8N_WEBHOOK_URL;
 
     // Validar payload
     const payload: LeadPayload = req.body;
