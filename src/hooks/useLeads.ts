@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { LEAD_WEBHOOK_DEV_PATH } from '@/config/leadWebhook';
+import { useState } from "react";
+import { useSubmit } from "@formspree/react";
+import { isSubmissionError } from "@formspree/core";
+import { FORMSPREE_FORM_ID } from "@/config/formspree";
 
 export interface LeadData {
   nome: string;
@@ -18,295 +18,75 @@ export interface LeadData {
   metadata?: Record<string, unknown>;
 }
 
-const TIPO_CONSORCIO_LABELS: Record<string, string> = {
-  imoveis: "Imóveis",
-  automoveis: "Automóveis",
-  investimento: "Investimento",
-};
+function buildFormspreePayload(lead: LeadData): Record<string, string> {
+  const origem = lead.origem || "formulario_site";
+  const base: Record<string, string> = {
+    nome: lead.nome,
+    email: lead.email,
+    _replyto: lead.email,
+    _subject: `Consórcio — ${origem}`,
+    origem,
+    url: typeof window !== "undefined" ? window.location.href : "",
+  };
 
-const resolveTipoConsorcio = (lead: LeadData): string | undefined => {
-  const fromMeta = lead.metadata?.tipoConsorcio;
-  if (typeof fromMeta === "string" && fromMeta) return fromMeta;
-  if (lead.tipoConsorcio) return lead.tipoConsorcio;
-  const origem = lead.origem || "";
-  const m = origem.match(
-    /simulacao_(?:whatsapp_)?(imoveis|automoveis|investimento)/
-  );
-  return m ? m[1] : undefined;
-};
+  const optional = [
+    ["telefone", lead.telefone],
+    ["empresa", lead.empresa],
+    ["cargo", lead.cargo],
+    ["mensagem", lead.mensagem],
+    ["quantidadeCartoes", lead.quantidadeCartoes],
+    ["principalDor", lead.principalDor],
+    ["tipoConsorcio", lead.tipoConsorcio],
+    ["principalObjetivo", lead.principalObjetivo],
+  ] as const;
 
-const STORAGE_KEY = 'pending_leads';
-
-// Detectar se está em produção
-// Verifica múltiplas condições para garantir detecção correta
-const isProduction = (): boolean => {
-  // 1. Verifica se está em modo produção do Vite
-  if (import.meta.env.PROD) return true;
-  
-  // 2. Verifica se não está em localhost
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('192.168.')) {
-      return true;
+  for (const [key, val] of optional) {
+    if (val != null && String(val).trim() !== "") {
+      base[key] = String(val);
     }
   }
-  
-  // 3. Verifica variável de ambiente customizada (pode ser configurada no Vercel)
-  if (import.meta.env.VITE_ENVIRONMENT === 'production') {
-    return true;
+
+  if (lead.metadata && Object.keys(lead.metadata).length > 0) {
+    base.metadata = JSON.stringify(lead.metadata);
   }
-  
-  return false;
-};
 
-/**
- * Desenvolvimento: POST em LEAD_WEBHOOK_DEV_PATH → proxy Vite (/webhook → N8N_WEBHOOK_TARGET)
- * → única URL oficial em @/config/leadWebhook (host.docker.internal:5678/webhook/consorcio).
- * Produção: POST /api/webhook/lead → mesma URL oficial no servidor (ver api/webhook/lead).
- */
-const getWebhookUrl = (): string => {
-  if (isProduction()) {
-    return "/api/webhook/lead";
-  }
-  return LEAD_WEBHOOK_DEV_PATH;
-};
-
-// Chamar webhook do n8n
-const callLeadWebhook = async (leadData: LeadData) => {
-  try {
-    const webhookUrl = getWebhookUrl();
-    
-    if (!webhookUrl) {
-      console.warn('⚠️ URL do webhook não configurada');
-      return;
-    }
-
-    const tipoConsorcio = resolveTipoConsorcio(leadData);
-    const tipoConsorcioLabel = tipoConsorcio
-      ? TIPO_CONSORCIO_LABELS[tipoConsorcio] || tipoConsorcio
-      : "Contato geral";
-
-    const metadataMerged: Record<string, unknown> = {
-      ...(leadData.metadata || {}),
-      tipoConsorcio: tipoConsorcio ?? leadData.metadata?.tipoConsorcio,
-      principalObjetivo: leadData.principalObjetivo ?? leadData.metadata?.principalObjetivo,
-      quantidadeCartoes: leadData.quantidadeCartoes,
-      principalDor: leadData.principalDor,
-    };
-
-    const tipoSimulacaoId = tipoConsorcio ?? null;
-
-    const payload = {
-      nome: leadData.nome,
-      email: leadData.email,
-      telefone: leadData.telefone,
-      empresa: leadData.empresa,
-      cargo: leadData.cargo,
-      mensagem: leadData.mensagem,
-      quantidadeCartoes: leadData.quantidadeCartoes,
-      principalDor: leadData.principalDor,
-      tipoSimulacaoId,
-      tipoConsorcio: tipoSimulacaoId,
-      tipoConsorcioLabel,
-      principalObjetivo: leadData.principalObjetivo,
-      origem: leadData.origem || "formulario_site",
-      timestamp: new Date().toISOString(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      metadata: metadataMerged,
-    };
-
-    const environment = isProduction() ? "PRODUÇÃO" : "DESENVOLVIMENTO";
-    console.log(
-      `🚀 [${environment}] POST webhook:`,
-      webhookUrl,
-      isProduction() ? "" : "(proxy /webhook → N8N_WEBHOOK_TARGET)"
-    );
-    console.log('📦 Payload:', payload);
-
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json, text/plain, */*",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    console.log('📡 Resposta do webhook:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok
-    });
-
-    if (!response.ok) {
-      let errorText = "Sem resposta";
-      try {
-        const errorData = await response.json();
-        errorText =
-          errorData.message || errorData.error || JSON.stringify(errorData);
-      } catch {
-        errorText = await response.text().catch(() => "Sem resposta");
-      }
-
-      if (
-        response.status === 404 ||
-        errorText.includes("not registered") ||
-        errorText.includes("not found")
-      ) {
-        console.warn("⚠️ Webhook não encontrado no n8n. Verifique URL, workflow ativo e método POST.");
-        console.warn(`   URL usada: ${webhookUrl}`);
-      }
-
-      throw new Error(`Webhook retornou status ${response.status}: ${errorText}`);
-    }
-
-    const raw = await response.text();
-    let responseData: unknown = null;
-    if (raw) {
-      try {
-        responseData = JSON.parse(raw) as unknown;
-      } catch {
-        responseData = raw;
-      }
-    }
-    console.log(`✅ [${environment}] Webhook OK`, responseData);
-  } catch (error: any) {
-    console.error('❌ Erro ao chamar webhook n8n:', error);
-    console.error('Detalhes:', {
-      message: error.message,
-      stack: error.stack,
-      environment: isProduction() ? 'PRODUÇÃO' : 'DESENVOLVIMENTO',
-      hostname: typeof window !== 'undefined' ? window.location.hostname : 'N/A',
-      viteProd: import.meta.env.PROD,
-      viteMode: import.meta.env.MODE
-    });
-    // Não bloqueia o salvamento do lead se o webhook falhar
-  }
-};
-
-// Salvar lead no localStorage como fallback
-const saveToLocalStorage = (lead: LeadData) => {
-  try {
-    const pending = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    pending.push({
-      ...lead,
-      timestamp: new Date().toISOString(),
-      synced: false
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
-    return true;
-  } catch (error) {
-    console.error('Erro ao salvar no localStorage:', error);
-    return false;
-  }
-};
-
-// Tentar sincronizar leads pendentes do localStorage
-export const syncPendingLeads = async () => {
-  try {
-    const pending = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    const unsynced = pending.filter((lead: any) => !lead.synced);
-    
-    if (unsynced.length === 0) return;
-
-    for (const lead of unsynced) {
-      try {
-        const { error } = await supabase
-          .from('leads')
-        .insert([{
-          nome: lead.nome,
-          email: lead.email,
-          telefone: lead.telefone,
-          empresa: lead.empresa,
-          cargo: lead.cargo,
-          mensagem: lead.mensagem,
-          origem: lead.origem || 'formulario_site',
-          metadata: {
-            ...lead.metadata,
-            quantidadeCartoes: lead.quantidadeCartoes,
-            principalDor: lead.principalDor
-          }
-        }]);
-
-        if (!error) {
-          lead.synced = true;
-        }
-      } catch (error) {
-        console.error('Erro ao sincronizar lead:', error);
-      }
-    }
-
-    // Atualizar localStorage removendo leads sincronizados
-    const stillPending = pending.filter((lead: any) => !lead.synced);
-    if (stillPending.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stillPending));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  } catch (error) {
-    console.error('Erro ao sincronizar leads pendentes:', error);
-  }
-};
+  return base;
+}
 
 export const useCreateLead = () => {
+  const submitToFormspree = useSubmit(FORMSPREE_FORM_ID);
   const [isLoading, setIsLoading] = useState(false);
 
   const createLead = async (leadData: LeadData) => {
     setIsLoading(true);
-    let savedToDatabase = false;
-    let savedToLocalStorage = false;
-
     try {
-      try {
-        const { data, error } = await supabase
-          .from("leads")
-          .insert([
-            {
-              nome: leadData.nome,
-              email: leadData.email,
-              telefone: leadData.telefone,
-              empresa: leadData.empresa,
-              cargo: leadData.cargo,
-              mensagem: leadData.mensagem,
-              origem: leadData.origem || "formulario_site",
-              metadata: {
-                ...leadData.metadata,
-                quantidadeCartoes: leadData.quantidadeCartoes,
-                principalDor: leadData.principalDor,
-                tipoConsorcio: leadData.tipoConsorcio ?? leadData.metadata?.tipoConsorcio,
-                principalObjetivo: leadData.principalObjetivo,
-                userAgent: navigator.userAgent,
-                timestamp: new Date().toISOString(),
-                url: window.location.href,
-              },
-            },
-          ])
-          .select()
-          .single();
+      const payload = buildFormspreePayload(leadData);
+      const result = await submitToFormspree(payload);
 
-        if (error) throw error;
-
-        savedToDatabase = true;
-        console.log("✅ Lead salvo no banco:", data);
-      } catch (error: unknown) {
-        console.error("❌ Erro ao salvar no Supabase:", error);
-        savedToLocalStorage = saveToLocalStorage(leadData);
-        if (savedToLocalStorage) {
-          console.log("💾 Lead salvo no localStorage como fallback");
-          setTimeout(() => syncPendingLeads(), 2000);
-        }
+      if (isSubmissionError(result)) {
+        console.error("Formspree:", result);
+        return {
+          success: false,
+          savedToDatabase: false,
+          savedToLocalStorage: false,
+        };
       }
+
+      return {
+        success: true,
+        savedToDatabase: true,
+        savedToLocalStorage: false,
+      };
+    } catch (e) {
+      console.error("Erro ao enviar para Formspree:", e);
+      return {
+        success: false,
+        savedToDatabase: false,
+        savedToLocalStorage: false,
+      };
     } finally {
-      await callLeadWebhook(leadData);
       setIsLoading(false);
     }
-
-    return {
-      success: savedToDatabase || savedToLocalStorage,
-      savedToDatabase,
-      savedToLocalStorage,
-    };
   };
 
   return { createLead, isLoading };
